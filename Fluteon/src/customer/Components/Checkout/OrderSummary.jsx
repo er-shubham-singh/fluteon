@@ -106,6 +106,7 @@
 
 // export default OrderSummary;
 
+
 import React, { useEffect, useState } from "react";
 import {
   Backdrop,
@@ -155,17 +156,23 @@ const OrderSummary = () => {
   };
 
   // ⏳ Show loader if order is still loading
-  if (isLoadingOrder) {
-    return (
-      <Backdrop
-        open
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-      >
-        <CircularProgress color="inherit" />
-        <span className="ml-3 text-white font-medium">Loading Order...</span>
-      </Backdrop>
-    );
-  }
+if (
+  isLoadingOrder ||
+  !order.order || 
+  !order.order.totalDiscountedPrice || 
+  !order.order.orderItems
+) {
+  return (
+    <Backdrop
+      open
+      sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+    >
+      <CircularProgress color="inherit" />
+      <span className="ml-3 text-white font-medium">Loading Order...</span>
+    </Backdrop>
+  );
+}
+
 
   return (
     <div className="space-y-5">
