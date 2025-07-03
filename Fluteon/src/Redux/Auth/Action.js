@@ -102,6 +102,7 @@ export const logout = (token) => {
     };
   };
 
+  
   // ✅ Load user from JWT in localStorage (for auto-login after refresh)
 export const loadUserFromToken = () => {
   return async (dispatch) => {

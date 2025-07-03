@@ -19,8 +19,6 @@ import {
 
 export const addItemToCart = (reqData) => async (dispatch) => {
     console.log("req data ",reqData)
-    console.log("Cart state:", reqData);
-
   try {
    
     dispatch({ type: ADD_ITEM_TO_CART_REQUEST });

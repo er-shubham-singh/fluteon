@@ -40,7 +40,9 @@ app.use("/api/reviews",reviewRouter);
 const ratingRouter=require("./routes/rating.routes.js");
 app.use("/api/ratings",ratingRouter);
 
+const userQueryRoute=require("./routes/userQueryRoute.js");
 
+app.use("/api/user",userQueryRoute);
 
 // for search 
 
