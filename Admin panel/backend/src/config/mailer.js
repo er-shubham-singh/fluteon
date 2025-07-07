@@ -12,10 +12,12 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendOrderConfirmationEmail(to, order) {
+
+  console.log(" full order history", order)
   const itemsList = order.orderItems
     .map(
       (item) =>
-        `<li>${item.product.title} - Qty: ${item.quantity}, Price: ₹${item.product.price}</li>`
+        `<li>${item.product.title}, <li>${item.size}, - Qty: ${item.quantity}, Price: ₹${item.discountedPrice}</li>`
     )
     .join("");
 
