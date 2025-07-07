@@ -51,4 +51,7 @@ app.use("/api/user",userQueryRoute);
 const adminOrderRoutes=require("./routes/adminOrder.routes.js");
 app.use("/api/admin/orders",adminOrderRoutes);
 
+const couponRoutes = require("../src/routes/coupon.routes.js")
+app.use("/api/coupons", couponRoutes);
+
 module.exports={app};

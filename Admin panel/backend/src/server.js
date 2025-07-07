@@ -1,5 +1,6 @@
 const { app } = require(".");
 const { connectDb } = require("./config/db");
+const couponModel = require("./models/coupon.model");
 
 const PORT=8000;
 app.listen(PORT,async ()=>{
@@ -199,3 +200,65 @@ app.listen(PORT,async ()=>{
 //         console.log("error",err)
 //         process.exit(1)
 //     })
+
+
+
+
+// To inser dummy code
+
+// const mongoose = require("mongoose");
+// const dotenv = require("dotenv");
+// dotenv.config();
+
+// const Coupon = require("./models/coupon.model"); // make sure path is correct
+
+// const mongoDbUrl = process.env.MONGODB_NAME;
+
+// const seedCoupons = async () => {
+//   const coupons = [
+//     {
+//       code: "Fluteon100",
+//       discountType: "flat",
+//       discountValue: 100,
+//       minOrderAmount: 500,
+//       usageLimit: 100,
+//       expiresAt: new Date("2025-12-31"),
+//     },
+//     {
+//       code: "Fluteon200",
+//       discountType: "flat",
+//       discountValue: 200,
+//       maxDiscountAmount: 200,
+//       minOrderAmount: 1000,
+//       usageLimit: 50,
+//       expiresAt: new Date("2025-10-01"),
+//     },
+//   ];
+
+//   for (let coupon of coupons) {
+//     const exists = await Coupon.findOne({ code: coupon.code });
+//     if (!exists) {
+//       await new Coupon(coupon).save();
+//       console.log(`✅ Inserted: ${coupon.code}`);
+//     } else {
+//       console.log(`⚠️ Already exists: ${coupon.code}`);
+//     }
+//   }
+// };
+
+// mongoose
+//   .connect(mongoDbUrl, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(async () => {
+//     console.log("✅ MongoDB connected");
+//     console.log("📦 Seeding coupons...");
+//     await seedCoupons();
+//     console.log("🎉 Done seeding coupons!");
+//     process.exit(0);
+//   })
+//   .catch((err) => {
+//     console.error("❌ MongoDB connection error:", err);
+//     process.exit(1);
+//   });
