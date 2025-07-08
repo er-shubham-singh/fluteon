@@ -121,7 +121,7 @@ export const createReview = (resData) => {
         type: CREATE_REVIEW_SUCCESS,
         payload: response.data,
       });
-      console.log("create review ", response.data);
+      // console.log("create review ", response.data);
     } catch (error) {
       dispatch({
         type: CREATE_REVIEW_FAILURE,
@@ -140,7 +140,7 @@ export const getAllReviews = (productId) => {
         type: GET_ALL_REVIEWS_SUCCESS,
         payload: response.data,
       });
-      console.log("all reviews", response.data);
+      // console.log("all reviews", response.data);
     } catch (error) {
       dispatch({
         type: GET_ALL_REVIEWS_FAILURE,
@@ -177,7 +177,7 @@ export const getAllRatings = (productId) => {
         type: GET_ALL_RATINGS_SUCCESS,
         payload: response.data,
       });
-      console.log("all ratings", response.data);
+      // console.log("all ratings", response.data);
     } catch (error) {
       dispatch({
         type: GET_ALL_RATINGS_FAILURE,
@@ -196,7 +196,7 @@ export const getRatingSummary = (productId) => {
         type: GET_RATING_SUMMARY_SUCCESS,
         payload: response.data,
       });
-      console.log("rating summary", response.data);
+      // console.log("rating summary", response.data);
     } catch (error) {
       dispatch({
         type: GET_RATING_SUMMARY_FAILURE,
