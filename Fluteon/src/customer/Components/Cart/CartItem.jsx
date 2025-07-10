@@ -83,6 +83,8 @@ const baseUrl = process.env.REACT_APP_API_BASE_URL
 //       </div>}
 //     </div>
 //   );
+
+
 return (
   <div className="p-4 shadow-lg border rounded-md bg-white">
     <div className="flex flex-col lg:flex-row lg:items-center">
@@ -98,7 +100,7 @@ return (
       {/* Details Section */}
       <div className="mt-4 lg:mt-0 lg:ml-5 w-full space-y-1">
         <p className="font-semibold text-base">{item?.product?.title}</p>
-        <p className="opacity-70 text-sm">Size: {item?.size}, White</p>
+        <p className="opacity-70 text-sm">Size: {item?.size}</p>
         <p className="opacity-70 text-sm">Seller: {item?.product?.brand}</p>
 
         <div className="flex flex-wrap gap-2 items-center pt-2">

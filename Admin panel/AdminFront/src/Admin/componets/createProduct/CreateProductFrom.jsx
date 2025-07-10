@@ -32,7 +32,7 @@ const categoryHierarchy = {
     ],
     tops: [
       { value: "tanic_tops", label: "Tanic Top" },
-      { value: "tank_tops", label: "Tank Top" },
+      { value: "tunic_tops", label: "Tank Top" },
       { value: "peplum_tops", label: "Peplum Top" },
       { value: "crop_tops", label: "Crop Tops" },
     ],
@@ -82,13 +82,39 @@ const CreateProductForm = () => {
     setPreviewImages(previews);
   };
 
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setProductData((prevState) => ({
+  //     ...prevState,
+  //     [name]: value,
+  //   }));
+  // };
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProductData((prevState) => ({
+  const { name, value } = e.target;
+
+  setProductData((prevState) => {
+    const updatedData = {
       ...prevState,
       [name]: value,
-    }));
-  };
+    };
+
+    if (
+      (name === "price" || name === "discountedPrice") &&
+      updatedData.price &&
+      updatedData.discountedPrice &&
+      parseFloat(updatedData.price) > parseFloat(updatedData.discountedPrice)
+    ) {
+      const price = parseFloat(updatedData.price);
+      const discountedPrice = parseFloat(updatedData.discountedPrice);
+      const discount = ((price - discountedPrice) / price) * 100;
+      updatedData.discountPersent = discount.toFixed(2); // rounded to 2 decimal places
+    }
+
+    return updatedData;
+  });
+};
+
 
   const handleSizeChange = (e, index) => {
     let { name, value } = e.target;
@@ -131,22 +157,60 @@ const CreateProductForm = () => {
     dispatch(createProduct({ data: formData, jwt }));
   };
 
+// useEffect(() => {
+//   if (productData.thirdLavelCategory) {
+//    fetch(`${API_BASE_URL}/api/admin/products/${productData.thirdLavelCategory}`)
+
+//       .then((res) => res.json())
+//       .then((data) => {
+//         console.log("Size chart response:", data);
+//         const formattedSizes = data.sizes.map((sizeObj) => ({
+//           name: sizeObj.label,
+//           quantity: 0,
+//         }));
+//         setSizeChart(data);
+//         setProductData((prevState) => ({
+//           ...prevState,
+//           size: formattedSizes,
+//         }));
+//       })
+//       .catch(() => {
+//         setSizeChart(null);
+//         setProductData((prevState) => ({
+//           ...prevState,
+//           size: [],
+//         }));
+//       });
+//   }
+// }, [productData.thirdLavelCategory]);
+
+
+
 useEffect(() => {
   if (productData.thirdLavelCategory) {
-   fetch(`${API_BASE_URL}/api/admin/products/${productData.thirdLavelCategory}`)
-
+    fetch(`${API_BASE_URL}/api/admin/products/${productData.thirdLavelCategory}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("Size chart response:", data);
-        const formattedSizes = data.sizes.map((sizeObj) => ({
-          name: sizeObj.label,
-          quantity: 0,
-        }));
-        setSizeChart(data);
-        setProductData((prevState) => ({
-          ...prevState,
-          size: formattedSizes,
-        }));
+
+        // If no size chart (like tank tops), treat as free size
+        if (data.sizes.length === 0) {
+          setSizeChart(null);
+          setProductData((prevState) => ({
+            ...prevState,
+            size: [], // clear individual sizes
+          }));
+        } else {
+          const formattedSizes = data.sizes.map((sizeObj) => ({
+            name: sizeObj.label,
+            quantity: 0,
+          }));
+          setSizeChart(data);
+          setProductData((prevState) => ({
+            ...prevState,
+            size: formattedSizes,
+          }));
+        }
       })
       .catch(() => {
         setSizeChart(null);
@@ -356,31 +420,45 @@ useEffect(() => {
             />
           </Grid>
 
-          {productData.size.map((size, index) => (
-            <Grid container item spacing={3} key={index}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Size Name"
-                  name="name"
-                  value={size.name}
-                  onChange={(event) => handleSizeChange(event, index)}
-                  required
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Quantity"
-                  name="size_quantity"
-                  type="number"
-                  value={size.quantity}
-                  onChange={(event) => handleSizeChange(event, index)}
-                  required
-                  fullWidth
-                />
-              </Grid>
-            </Grid>
-          ))}
+{productData.size.length > 0 ? (
+  productData.size.map((size, index) => (
+    <Grid container item spacing={3} key={index}>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          label="Size Name"
+          name="name"
+          value={size.name}
+          onChange={(event) => handleSizeChange(event, index)}
+          required
+          fullWidth
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          label="Quantity"
+          name="size_quantity"
+          type="number"
+          value={size.quantity}
+          onChange={(event) => handleSizeChange(event, index)}
+          required
+          fullWidth
+        />
+      </Grid>
+    </Grid>
+  ))
+) : (
+  <Grid item xs={12} sm={6}>
+    <TextField
+      fullWidth
+      label="Quantity (Free Size)"
+      name="quantity"
+      type="number"
+      value={productData.quantity}
+      onChange={handleChange}
+      required
+    />
+  </Grid>
+)}
 
           {sizeChart && (
             <Box mt={2}>
