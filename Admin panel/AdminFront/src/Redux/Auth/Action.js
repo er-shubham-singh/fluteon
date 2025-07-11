@@ -12,7 +12,8 @@ import {
   GET_ALL_USERS_REQUEST,
   GET_ALL_USERS_SUCCESS,
   GET_ALL_USERS_FAILURE,
-  LOGOUT
+  
+  LOGOUT,
 } from './ActionTypes';
 import api, { API_BASE_URL } from '../../config/api';
 
