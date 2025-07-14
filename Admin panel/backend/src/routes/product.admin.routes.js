@@ -8,7 +8,11 @@ const sizeChart = require("../models/sizeChart.js");
 router.post('/', upload.array("images", 4),productController.createProduct);
 router.post('/creates', productController.createMultipleProduct);
 router.delete('/:id', productController.deleteProduct);
-router.put('/:id', productController.updateProduct);
+router.put(
+  '/:id',
+  upload.fields([{ name: "images", maxCount: 4 }]),
+  productController.updateProduct
+);
 // routes/sizeChart.route.js
 router.get("/:category", async (req, res) => {
   try {
