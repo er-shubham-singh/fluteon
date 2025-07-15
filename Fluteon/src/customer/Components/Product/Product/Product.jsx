@@ -74,32 +74,65 @@ export default function Product() {
     navigate({ search: `?${query}` });
   };
 
+  // useEffect(() => {
+  //   const [minPrice, maxPrice] =
+  //     price === null ? [0, 0] : price.split("-").map(Number);
+  //   const data = {
+  //     category: param.lavelThree,
+  //     colors: colorValue || [],
+  //     sizes: sizeValue || [],
+  //     minPrice: minPrice || 0,
+  //     maxPrice: maxPrice || 10000,
+  //     minDiscount: disccount || 0,
+  //     sort: sortValue || "price_low",
+  //     pageNumber: pageNumber ,
+  //     pageSize: 10,
+  //     stock: stock,
+  //   };
+  //   dispatch(findProducts(data));
+  // }, [
+  //   param.lavelThree,
+  //   colorValue,
+  //   sizeValue,
+  //   price,
+  //   disccount,
+  //   sortValue,
+  //   pageNumber,
+  //   stock,
+  // ]);
+
+
   useEffect(() => {
-    const [minPrice, maxPrice] =
-      price === null ? [0, 0] : price.split("-").map(Number);
-    const data = {
-      category: param.lavelThree,
-      colors: colorValue || [],
-      sizes: sizeValue || [],
-      minPrice: minPrice || 0,
-      maxPrice: maxPrice || 10000,
-      minDiscount: disccount || 0,
-      sort: sortValue || "price_low",
-      pageNumber: pageNumber ,
-      pageSize: 10,
-      stock: stock,
-    };
-    dispatch(findProducts(data));
-  }, [
-    param.lavelThree,
-    colorValue,
-    sizeValue,
-    price,
-    disccount,
-    sortValue,
-    pageNumber,
-    stock,
-  ]);
+  const [minPrice, maxPrice] =
+    price === null ? [0, 0] : price.split("-").map(Number);
+
+  const category = param.lavelThree || param.lavelTwo;
+
+  const data = {
+    category,
+    colors: colorValue || [],
+    sizes: sizeValue || [],
+    minPrice: minPrice || 0,
+    maxPrice: maxPrice || 10000,
+    minDiscount: disccount || 0,
+    sort: sortValue || "price_low",
+    pageNumber: pageNumber,
+    pageSize: 10,
+    stock: stock,
+  };
+
+  dispatch(findProducts(data));
+}, [
+  param.lavelTwo,
+  param.lavelThree,
+  colorValue,
+  sizeValue,
+  price,
+  disccount,
+  sortValue,
+  pageNumber,
+  stock,
+]);
 
   const handleFilter = (value, sectionId) => {
     const searchParams = new URLSearchParams(location.search);
@@ -331,7 +364,7 @@ export default function Product() {
             </div>
           </div>
 
-          <section aria-labelledby="products-heading" className="pb-24 pt-6">
+          <section aria-labelledby="products-heading" className="pb-6 pt-6">
             <h2 id="products-heading" className="sr-only">
               Products
             </h2>
@@ -458,13 +491,19 @@ export default function Product() {
                 </form>
 
                 {/* Product grid */}
-                <div className="lg:col-span-4 w-full ">
-                  <div className="flex flex-wrap justify-center bg-white border py-5 rounded-md ">
-                    {customersProduct?.products?.content?.map((item) => (
-                      <ProductCard product={item} />
-                    ))}
-                  </div>
-                </div>
+<div className="lg:col-span-4 w-full">
+  <div className="flex flex-wrap justify-center bg-white border py-5 rounded-md">
+    {customersProduct?.products?.content?.map((item) => (
+      <div
+        key={item._id}
+        className="w-1/2 sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-1"
+      >
+        <ProductCard product={item} />
+      </div>
+    ))}
+  </div>
+</div>
+
               </div>
             </div>
           </section>

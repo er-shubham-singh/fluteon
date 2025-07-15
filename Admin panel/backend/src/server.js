@@ -21,6 +21,7 @@ app.listen(PORT,async ()=>{
 // //     console.log("ecommerce api listing on port ",PORT)
 // // })
 
+
 // const dummySizeCharts = [
 //   {
 //     category: "formal_pants",
@@ -87,6 +88,33 @@ app.listen(PORT,async ()=>{
 //       { label: "5XL", waist: 40, }
 //     ]
 //   },
+// {
+//   category: "blazers",
+//   sizes: [
+//     { label: "S", bust: 34, shoulder: 14 },
+//     { label: "M", bust: 36, shoulder: 14.5 },
+//     { label: "L", bust: 38, shoulder: 15 },
+//     { label: "XL", bust: 40, shoulder: 15.5 },
+//     { label: "XXL", bust: 42, shoulder: 16 },
+//     { label: "3XL", bust: 44, shoulder: 16.5 },
+//     { label: "4XL", bust: 46, shoulder: 17 },
+//     { label: "5XL", bust: 48, shoulder: 17.5 }
+//   ]
+// },
+// {
+//   category: "blazers_sets",
+//   sizes: [
+//     { label: "S", bust: 34, shoulder: 14, waist: 26, hip: 36 },
+//     { label: "M", bust: 36, shoulder: 14.5, waist: 28, hip: 38 },
+//     { label: "L", bust: 38, shoulder: 15, waist: 30, hip: 40 },
+//     { label: "XL", bust: 40, shoulder: 15.5, waist: 32, hip: 42 },
+//     { label: "XXL", bust: 42, shoulder: 16, waist: 34, hip: 44 },
+//     { label: "3XL", bust: 44, shoulder: 16.5, waist: 36, hip: 46 },
+//     { label: "4XL", bust: 46, shoulder: 17, waist: 38, hip: 48 },
+//     { label: "5XL", bust: 48, shoulder: 17.5, waist: 40, hip: 50 }
+//   ]
+// },
+
 //   {
 //     category: "jeans",
 //     sizes: [
