@@ -26,9 +26,9 @@ import {
   findProductsByCategory,
 } from "../../../../Redux/Customers/Product/Action";
 import { deepPurple } from "@mui/material/colors";
-import { Backdrop, CircularProgress } from "@mui/material";
+import { Backdrop, Box, CircularProgress } from "@mui/material";
 import BackdropComponent from "../../BackDrop/Backdrop";
-
+import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -492,15 +492,25 @@ export default function Product() {
 
                 {/* Product grid */}
 <div className="lg:col-span-4 w-full">
-  <div className="flex flex-wrap justify-center bg-white border py-5 rounded-md">
-    {customersProduct?.products?.content?.map((item) => (
-      <div
-        key={item._id}
-        className="w-1/2 sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-1"
-      >
-        <ProductCard product={item} />
-      </div>
-    ))}
+  <div className="flex flex-wrap justify-center bg-white border py-5 rounded-md min-h-[300px]">
+    {customersProduct?.products?.content?.length > 0 ? (
+      customersProduct.products.content.map((item) => (
+        <div
+          key={item._id}
+          className="w-1/2 sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-1"
+        >
+          <ProductCard product={item} />
+        </div>
+      ))
+    ) : (
+      <Box className="flex flex-col items-center justify-center w-full py-10 text-gray-500">
+        <SentimentDissatisfiedIcon sx={{ fontSize: 60, color: "#9ca3af" }} />
+        <p className="mt-4 text-lg font-medium">No products found</p>
+        <p className="text-sm text-center px-4 mt-1">
+          We're working on adding more amazing products. Please check back soon!
+        </p>
+      </Box>
+    )}
   </div>
 </div>
 
