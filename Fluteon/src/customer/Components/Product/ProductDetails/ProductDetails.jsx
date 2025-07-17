@@ -15,9 +15,6 @@ import { IconButton, Tooltip } from '@mui/material';
 
 import { Helmet } from 'react-helmet';
 
-
-
-
 const product = {
   sizes: [
     { name: "S", inStock: true },

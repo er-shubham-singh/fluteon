@@ -36,6 +36,8 @@ const ProductsTable = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { customersProduct } = useSelector((store) => store);
+
+  
   const [filterValue, setFilterValue] = useState({
     availability: "",
     category: "",
