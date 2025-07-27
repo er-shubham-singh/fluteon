@@ -1,10 +1,29 @@
+const couponModel = require("../models/coupon.model");
 const Coupon = require("../models/coupon.model");
 const CouponUsage = require("../models/coupon.usage.model");
 const Order = require("../models/order.model");
 
+exports.createCoupon = async (couponData) => {
+  const existing = await Coupon.findOne({ code: couponData.code });
+  if (existing) throw new Error("Coupon code already exists");
+
+  const newCoupon = new Coupon(couponData);
+  await newCoupon.save();
+  return newCoupon;
+};
+
+exports.getAllCoupons = async () => {
+  return await Coupon.find().sort({ createdAt: -1 });
+};
+
+exports.getAllCouponUsage = async () => {
+  return await CouponUsage.find()
+    .populate("user")
+    .populate("order")
+    .sort({ createdAt: -1 });
+};
 
 exports.applyCoupon = async (code, userId, orderId) => {
-
   const coupon = await Coupon.findOne({ code, isActive: true });
   if (!coupon) throw new Error("Invalid or expired coupon");
 
@@ -56,9 +75,4 @@ exports.applyCoupon = async (code, userId, orderId) => {
   };
 };
 
-exports.getAllCouponUsage = async () => {
-  return await CouponUsage.find()
-    .populate("user")
-    .populate("order")
-    .sort({ createdAt: -1 });
-};
+

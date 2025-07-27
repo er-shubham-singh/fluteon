@@ -105,6 +105,19 @@ const dummySizeCharts = [
       { label: "5XL", waist: 40, }
     ]
   },
+    {
+    category: "skirts",
+    sizes: [
+       { label: "S", waist: 26, },
+      { label: "M", waist: 28, },
+      { label: "L", waist: 30, },
+      { label: "XL", waist: 32, },
+      { label: "XXL", waist: 34, },
+      { label: "3XL", waist: 36, },
+      { label: "4XL", waist: 38, },
+      { label: "5XL", waist: 40, }
+    ]
+  },
   {
     category: "formal_shirts",
     sizes: [

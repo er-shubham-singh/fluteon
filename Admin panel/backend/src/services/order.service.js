@@ -6,77 +6,9 @@ const CartItem = require("../models/cartItem.model.js");
 const mongoose = require("mongoose");
 const { sendOrderConfirmationEmail } = require("../config/mailer.js");
 
-// async function createOrder(user, shippAddress) {
-//   let address;
-//   if (shippAddress._id) {
-//     let existedAddress = await Address.findById(shippAddress._id);
-//     address = existedAddress;
-//   } else {
-//     address = new Address(shippAddress);
-//     address.user = user;
-//     await address.save();
-
-//     user.addresses.push(address);
-//     await user.save();
-//   }
-
-//   const cart = await cartService.findUserCart(user._id);
-//   const orderItems = [];
-//   const orderedProductIds = [];
-
-//   for (const item of cart.cartItems) {
-//     const orderItem = new OrderItem({
-//       price: item.price,
-//       product: item.product,
-//       quantity: item.quantity,
-//       size: item.size,
-//       userId: item.userId,
-//       discountedPrice: item.discountedPrice,
-//     });
-
-//     const createdOrderItem = await orderItem.save();
-//     orderItems.push(createdOrderItem);
-//     orderedProductIds.push(item.product._id.toString());
-//   }
-
-//   const createdOrder = new Order({
-//     user,
-//     orderItems,
-//     totalPrice: cart.totalPrice,
-//     totalDiscountedPrice: cart.totalDiscountedPrice,
-//     discounte: cart.discounte,
-//     totalItem: cart.totalItem,
-//     shippingAddress: address,
-//     orderDate: new Date(),
-//     orderStatus: "PENDING",
-//     "paymentDetails.status": "PENDING",
-//     createdAt: new Date(),
-//   });
-
-//   const savedOrder = await createdOrder.save();
-
-//   return savedOrder;
-// }
-
-// async function placedOrder(orderId) {
-//   const order = await findOrderById(orderId);
-
-//   // Do NOT update orderStatus here. Let it remain "PENDING"
-// order.paymentDetails.paymentStatus = "COMPLETED"; // ✅ use correct key name
-//   order.statusUpdatedAt = new Date();
-
-//   const updatedOrder = await order.save();
-
-//   // Send confirmation email after successful order placement and payment
-//   if (updatedOrder?.user?.email) {
-//     await sendOrderConfirmationEmail(updatedOrder.user.email, updatedOrder);
-//   }
-
-//   return updatedOrder;
-// }
-
-async function createOrder(user, shippAddress) {
+async function createOrder(user, shippAddress, usedSuperCoins = 0) {
   let address;
+
   if (shippAddress._id) {
     address = await Address.findById(shippAddress._id);
   } else {
@@ -106,55 +38,40 @@ async function createOrder(user, shippAddress) {
     orderedProductIds.push(item.product._id.toString());
   }
 
-  // ✅ Create the order (status is PENDING, but not paid)
+  // 🪙 Validate and Deduct Super Coins
+const dbUser = await User.findById(user._id); // ✅ Fetch Mongoose document
+if (!dbUser) throw new Error("User not found");
+
+if (usedSuperCoins > 0) {
+  if (dbUser.superCoins < usedSuperCoins) {
+    throw new Error("Insufficient Super Coins");
+  }
+
+  dbUser.superCoins -= usedSuperCoins; // ✅ Deduct coins from Mongoose doc
+  await dbUser.save(); // ✅ Save it properly
+}
+  const discountFromCoins = usedSuperCoins * 1;
+  const finalPriceAfterCoins = Math.max(cart.totalDiscountedPrice - discountFromCoins, 0);
+
   const createdOrder = new Order({
     user,
     orderItems,
     totalPrice: cart.totalPrice,
-    totalDiscountedPrice: cart.totalDiscountedPrice,
+    totalDiscountedPrice: finalPriceAfterCoins,
     discounte: cart.discounte,
     totalItem: cart.totalItem,
     shippingAddress: address,
+    usedSuperCoins,
     orderDate: new Date(),
     orderStatus: "PENDING",
     paymentDetails: { paymentStatus: "PENDING" },
     createdAt: new Date(),
   });
 
-  const savedOrder = await createdOrder.save();
-
-  // ❌ DO NOT REMOVE CART ITEMS here — only after payment is done!
-  return savedOrder; // this will give you order._id
+  return await createdOrder.save();
 }
 
-// async function placedOrder(orderId) {
-//   const order = await findOrderById(orderId);
 
-//   if (!order) throw new Error("Order not found");
-
-//   order.paymentDetails.paymentStatus = "COMPLETED";
-//   order.statusUpdatedAt = new Date();
-//   order.orderStatus = "CONFIRMED"; // ✅ Set CONFIRMED on payment
-
-//   const updatedOrder = await order.save();
-
-//   // ✅ Remove purchased items from cart after payment success
-//   const productIds = order.orderItems.map((item) => item.product._id);
-//   await CartItem.deleteMany({
-//     userId: order.user._id,
-//     product: { $in: productIds },
-//   });
-
-//   // ✅ Send order confirmation email
-//   if (updatedOrder?.user?.email) {
-//     await sendOrderConfirmationEmail(updatedOrder.user.email, updatedOrder);
-//   }
-
-//   return updatedOrder;
-// }
-
-
-// by gpt
 
 async function placedOrder(orderId, paymentMeta = {}) {
   const order = await findOrderById(orderId);
@@ -214,14 +131,8 @@ async function outForDelivery(orderId) {
 }
 
 
-// async function deliveredOrder(orderId) {
-//   const order = await findOrderById(orderId);
-//   order.orderStatus = "DELIVERED";
-//   order.statusUpdatedAt = new Date();
-//   return await order.save();
-// }
-
 const Product = require("../models/product.model"); // Make sure it's imported
+const User = require("../models/user.model.js");
 
 async function deliveredOrder(orderId) {
   const order = await findOrderById(orderId);
@@ -231,6 +142,16 @@ async function deliveredOrder(orderId) {
   order.statusUpdatedAt = new Date();
 
   await order.save();
+
+  // ✅ Reward Super Coins after delivery
+  console.log("🎯 Rewarding superCoins to:", order.user?._id, order.user?.email);
+
+  try {
+
+    await rewardeSuperCoins(order.user._id, order._id);
+  } catch (error) {
+    console.error("⚠️ Failed to reward Super Coins:", error.message);
+  }
 
   const lowStockAlerts = [];
 
@@ -243,7 +164,6 @@ async function deliveredOrder(orderId) {
       sizeToUpdate.quantity -= item.quantity;
       if (sizeToUpdate.quantity < 0) sizeToUpdate.quantity = 0;
 
-      // If quantity falls below 2, track alert
       if (sizeToUpdate.quantity < 2) {
         lowStockAlerts.push({
           productId: product._id,
@@ -257,9 +177,8 @@ async function deliveredOrder(orderId) {
     await product.save();
   }
 
-  // Optional: Return low stock info to caller
   return {
-    message: "Order marked as delivered",
+    message: "Order marked as delivered and super coins rewarded",
     lowStockAlerts,
   };
 }
@@ -373,32 +292,6 @@ const usersOrderHistory = async (userId) => {
   return orders;
 };
 
-
-// async function getAllOrders(page = 1, pageSize = 10) {
-//   const skip = (page - 1) * pageSize;
-
-//   const query = Order.find({ "paymentDetails.paymentStatus": "COMPLETED" })
-//     .populate("user")
-//     .populate("shippingAddress")
-//     .populate({
-//       path: "orderItems",
-//       populate: { path: "product" },
-//     })
-//     .sort({ createdAt: -1 });
-
-//   const totalOrders = await Order.countDocuments({ "paymentDetails.paymentStatus": "COMPLETED" });
-//   const totalPages = Math.ceil(totalOrders / pageSize);
-
-//   const orders = await query.skip(skip).limit(pageSize).lean();
-
-//   return {
-//     content: orders,
-//     currentPage: page,
-//     totalPages,
-//     totalOrders,
-//   };
-// }
-
 async function getAllOrders(page = 1, pageSize = 10, status = "", sort = "Newest") {
   const skip = (page - 1) * pageSize;
 
@@ -428,8 +321,6 @@ async function getAllOrders(page = 1, pageSize = 10, status = "", sort = "Newest
     totalOrders,
   };
 }
-
-
 async function deleteOrder(orderId) {
   const order = await findOrderById(orderId);
   if (!order) throw new Error("order not found with id " + orderId);
@@ -563,6 +454,44 @@ const recentUsers = await mongoose
 }
 
 
+const rewardeSuperCoins = async (userId, orderId) => {
+  console.log("🎯 rewardeSuperCoins called for", userId, "with order", orderId);
+
+  const order = await Order.findById(orderId);
+  if (!order || order.orderStatus !== "DELIVERED") {
+    console.log("❌ Order not delivered or not found");
+    throw new Error("Coins can only be rewarded after delivery");
+  }
+
+  const coins = Math.floor(order.totalDiscountedPrice / 100);
+  console.log("🪙 Coins to be rewarded:", coins);
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { $inc: { superCoins: coins } },
+    { new: true }
+  );
+
+  if (!updatedUser) {
+    console.log("❌ User not found for reward");
+  } else {
+    console.log("✅ Super coins added. New Balance:", updatedUser.superCoins);
+  }
+
+  order.earnedSuperCoins = coins;
+  await order.save();
+
+  return updatedUser;
+};
+const applySuperCoins = async (userId, coinCount, orderAmount) => {
+  const user = await User.findById(userId);
+  if (coinCount > user.superCoins) throw new Error("Not enough coins");
+
+  const discount = coinCount * 1; // ₹1 per coin
+  const finalAmount = Math.max(orderAmount - discount, 0);
+
+  return { finalAmount, discount };
+};
 
 
 module.exports = {
@@ -579,6 +508,7 @@ module.exports = {
   outForDelivery,
   returnOrder,
   approveReturnByAdmin,
-  getAdminDashboardOverview
+  getAdminDashboardOverview,
+  rewardeSuperCoins,
+  applySuperCoins
 };
-

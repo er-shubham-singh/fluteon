@@ -7,5 +7,8 @@ router.post("/apply", couponController.applyCoupon);
 
 // Admin: Get all usage logs
 router.get("/usages", couponController.getCouponUsage);
+router.post("/create", couponController.createCoupon);
+router.get("/all_coupon", couponController.getAllCoupons);
+
 
 module.exports = router;
