@@ -130,6 +130,7 @@ import { useState } from "react";
 import { useMediaQuery } from "@mui/material";
 
 
+
 const HomeProductSection = ({ section, data = [] }) => {
 const isMobile = useMediaQuery("(max-width: 640px)");
 const arrowSize = isMobile ? 36 : 50;
@@ -165,6 +166,7 @@ const arrowSize = isMobile ? 36 : 50;
 
   if (!data || data.length === 0) {
     return (
+      
       <div className="px-4 sm:px-6 lg:px-8 py-5">
         <h2 className="text-2xl font-extrabold text-gray-900 py-1">{section}</h2>
         <p className="text-gray-500">No products available at this time.</p>
@@ -173,7 +175,9 @@ const arrowSize = isMobile ? 36 : 50;
   }
 
   return (
-    <div className="relative">
+    
+    <> 
+      <div className="relative">
       <h2 className="text-2xl font-extrabold text-gray-900 px-2 py-5">{section}</h2>
 
       <div className="relative">
@@ -236,6 +240,7 @@ const arrowSize = isMobile ? 36 : 50;
 
       </div>
     </div>
+    </>
   );
 };
 

@@ -5,6 +5,7 @@ import ScrollToTop from './customer/Components/ScrollTop';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { loadUserFromToken } from './Redux/Auth/Action'; 
+import ChatWidget from './customer/Components/ChatAi/ChatWidget';
 
 function App() {
   const dispatch = useDispatch();
@@ -18,7 +19,9 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route path="/*" element={<CustomerRoutes />} />
+        
       </Routes>
+      <ChatWidget />
     </>
   );
 }

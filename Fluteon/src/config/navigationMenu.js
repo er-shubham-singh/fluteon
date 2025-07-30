@@ -29,6 +29,8 @@ export const navigation = {
             { name: 'Track Pants', id: 'track_pants', href: '{women/bottom_wear/track_pants}' },
             { name: 'Jeans', id: 'jeans', href: '{women/bottom_wear/jeans}' },
             { name: 'Skirts', id: 'skirts', href: '{women/bottom_wear/skirts}' },
+            { name: 'Shorts', id: 'shorts', href: '{women/bottom_wear/shorts}' },
+            { name: 'Linen Shorts', id: 'linen_shorts', href: '{women/bottom_wear/linen_shorts}' },
           ],
         },
                 {

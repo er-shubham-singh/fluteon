@@ -54,6 +54,10 @@ app.use("/api/admin/orders",adminOrderRoutes);
 const couponRoutes = require("../src/routes/coupon.routes.js")
 app.use("/api/coupons", couponRoutes);
 
+const chatRoutes = require("../src/routes/chatRoute.js")
+app.use("/api",chatRoutes)
+
+
 // // admin dashboard
 // app.use("/api/admin/orders", adminOrderRoutes);
 

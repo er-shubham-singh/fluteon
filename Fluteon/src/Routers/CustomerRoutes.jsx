@@ -26,6 +26,7 @@ const CustomerRoutes = () => {
     const showNavigation = location.pathname !== "*";
   return (
     <div>
+    
  <ThemeProvider theme={customerTheme}>
     {showNavigation && <Navigation />}
      <Routes>
@@ -48,6 +49,7 @@ const CustomerRoutes = () => {
         <Route path="/about-us" element={<About /> }></Route>
         <Route path="/contact-us" element={<Contact />}></Route>
         <Route path="*" element={<NotFound />} />
+        
       </Routes>
       <Footer/>
       </ThemeProvider>

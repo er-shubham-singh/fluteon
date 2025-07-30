@@ -75,4 +75,20 @@ exports.applyCoupon = async (code, userId, orderId) => {
   };
 };
 
+exports.deleteCoupon = async(Id)=>{
+  try{
+        const deletedCoupon = await couponModel.findOneAndDelete(Id)
+        if(!deletedCoupon){
+          throw new Error("Coupon deleted or not found")
+        }
+        return{
+          success:true,
+          message:"Coupon deleted Successfull",
+          deletedCoupon
+        }
+  } catch(error){
+        throw new Error("failed to delet coupon",+error.message)
+  }
+}
+
 

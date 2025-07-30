@@ -529,33 +529,34 @@ if (isDelivered) {
                 )}
               </Grid>
 
-              <Grid item>
-                {/* Return / Cancel Buttons */}
-                {status === "DELIVERED" && !["RETURNED_REQUESTED", "RETURNED", "RETURN_REJECTED"].includes(status) && (
-                  <>
-                    <Button variant="text" color="error" onClick={() => setReturnOpen(true)}>RETURN</Button>
-<ReturnDialog
-  open={returnOpen}
-  onClose={() => setReturnOpen(false)}
-  onConfirm={(formData) => {
-    dispatch(returnOrder(orderId, formData)); // use as-is
-    setReturnOpen(false);
-  }}
-/>
+             <Grid item>
+  {/* Return / Cancel Buttons */}
+  {status === "DELIVERED" && !["RETURNED_REQUESTED", "RETURNED", "RETURN_REJECTED"].includes(status) && (
+    <>
+      <Button variant="text" color="error" onClick={() => setReturnOpen(true)}>RETURN</Button>
+      <ReturnDialog
+        open={returnOpen}
+        onClose={() => setReturnOpen(false)}
+        onConfirm={(formData) => {
+          dispatch(returnOrder(orderId, formData)); // use as-is
+          setReturnOpen(false);
+        }}
+      />
+    </>
+  )}
 
+  {status === "RETURNED_REQUESTED" && (
+    <Button disabled variant="outlined" color="warning">Return Requested</Button>
+  )}
 
+  {/* Cancel Order button temporarily disabled */}
+  {/*
+  {!["DELIVERED", "CANCELLED", "RETURNED_REQUESTED", "RETURNED"].includes(status) && (
+    <Button variant="text" sx={{ color: deepPurple[500] }}>Cancel Order</Button>
+  )}
+  */}
+</Grid>
 
-                  </>
-                )}
-
-                {status === "RETURNED_REQUESTED" && (
-                  <Button disabled variant="outlined" color="warning">Return Requested</Button>
-                )}
-
-                {!["DELIVERED", "CANCELLED", "RETURNED_REQUESTED", "RETURNED"].includes(status) && (
-                  <Button variant="text" sx={{ color: deepPurple[500] }}>Cancel Order</Button>
-                )}
-              </Grid>
             </Grid>
           </Box>
 
@@ -641,16 +642,6 @@ if (isDelivered) {
             </Typography>
 
             {/* Admin note if exists */}
-            {/* {["RETURNED", "RETURN_REJECTED", "RETURN_APPROVED"].includes(status) && currentOrder?.adminNote && (
-              <Box className="mt-3 p-3 rounded-md border bg-gray-50">
-                <Typography variant="subtitle2" sx={{ color: "black", fontWeight: 500 }}>
-                  Admin Message:
-                </Typography>
-                <Typography variant="body2" sx={{ color: "#4B5563" }}>
-                  {currentOrder.rejectionMessage}
-                </Typography>
-              </Box>
-            )} */}
 {["RETURNED", "RETURN_REJECTED", "RETURN_APPROVED"].includes(status) &&
   ((status === "RETURN_REJECTED" && currentOrder?.rejectionMessage) ||
     currentOrder?.adminNote || currentOrder?.returnTime) && (
