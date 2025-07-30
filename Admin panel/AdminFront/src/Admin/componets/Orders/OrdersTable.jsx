@@ -53,6 +53,7 @@ const OrdersTable = () => {
 
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const { adminsOrder } = useSelector((store) => store);
+  console.log("admin order : ",adminsOrder)
   const { orders, totalPages, currentPage } = adminsOrder
   const [page, setPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState(null);

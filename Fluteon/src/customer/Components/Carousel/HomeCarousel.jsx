@@ -1,50 +1,6 @@
-// import React from "react";
-// import AliceCarousel from "react-alice-carousel";
-// import "react-alice-carousel/lib/alice-carousel.css";
-// import { homeCarouselData } from "./HomeCaroselData";
-// import { useNavigate } from "react-router-dom";
-// import "./Carousel.css"; // 🔥 You'll create this CSS file
-
-// const handleDragStart = (e) => e.preventDefault();
-
-// const HomeCarousel = () => {
-//   const navigate = useNavigate();
-
-//   const items = homeCarouselData.map((item) => (
-//     <div
-//       key={item.path}
-//       className=""
-//       onClick={() => navigate(item.path)}
-//     >
-//       <img
-//         className="w-full h-[60vh] sm:h-[50vh] xs:h-[40vh] flex justify-center items-center"
-//         onDragStart={handleDragStart}
-//         src={item.image}
-//         alt=""
-//         role="presentation"
-//       />
-//     </div>
-//   ));
-
-//   return (
-//     <div className="relative">
-//       <AliceCarousel
-//         mouseTracking
-//         items={items}
-//         autoPlay
-//         infinite
-//         autoPlayInterval={2000}
-//         disableButtonsControls
-//         disableDotsControls={false}
-//       />
-//     </div>
-//   );
-// };
-
-// export default HomeCarousel;
 
 
-import React from "react";
+import React, { useMemo } from "react";
 import AliceCarousel from "react-alice-carousel";
 import "react-alice-carousel/lib/alice-carousel.css";
 import { homeCarouselData } from "./HomeCaroselData";
@@ -53,7 +9,7 @@ import { Button, useMediaQuery } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useTheme } from "@mui/material/styles";
-import "./Carousel.css"; // 🔥 Contains custom CSS for spacing, etc.
+import "./Carousel.css";
 
 const HomeCarousel = () => {
   const navigate = useNavigate();
@@ -61,22 +17,31 @@ const HomeCarousel = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const arrowSize = isMobile ? 32 : 42;
 
-  const items = homeCarouselData.map((item) => (
-    <div
-      key={item.id}
-      onClick={() => navigate(item.path)}
-      className="carousel-item"
-    >
-      <div className="circle-wrapper">
-        <img
-          src={item.image}
-          alt={item.title}
-          className="circle-image"
-        />
-      </div>
-      <span className="carousel-title">{item.title}</span>
-    </div>
-  ));
+  const items = useMemo(
+    () =>
+      homeCarouselData.map((item, index) => (
+        <div
+          key={index}
+          onClick={() => navigate(item.path)}
+          className="carousel-item"
+          style={{ cursor: "pointer" }}
+        >
+          <div className="circle-wrapper">
+            <img
+              src={`/${item.image}`} // ✅ makes sure it's served from `/public/images/...`
+              alt={item.title}
+              loading="lazy"
+              width="100"
+              height="100"
+              decoding="async"
+              className="circle-image"
+            />
+          </div>
+          <span className="carousel-title">{item.title}</span>
+        </div>
+      )),
+    [navigate]
+  );
 
   return (
     <div className="carousel-container">
@@ -137,4 +102,4 @@ const HomeCarousel = () => {
   );
 };
 
-export default HomeCarousel;
+export default React.memo(HomeCarousel);

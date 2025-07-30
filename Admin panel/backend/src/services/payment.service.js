@@ -4,14 +4,15 @@ const User = require("../models/user.model.js");
 const orderService=require("../services/order.service.js");
 const mongoose = require("mongoose")
 
-const createPaymentLink = async (orderId, usedSuperCoins = 0) => {
+
+
+const createPaymentLink = async (orderId, usedSuperCoins = 0, couponDiscount = 0) => {
   try {
     const order = await orderService.findOrderById(orderId);
     if (!order) {
       throw new Error("Order not found");
     }
 
-    // Check if payment already exists for this order
     const existingPayment = await PaymentInformation.findOne({ order: order._id });
     if (existingPayment) {
       throw new Error("Payment already exists for this order");
@@ -22,44 +23,54 @@ const createPaymentLink = async (orderId, usedSuperCoins = 0) => {
       throw new Error("User not found for this order");
     }
 
-    // 🪙 Super Coin Calculation
-    const discountFromCoins = usedSuperCoins * 1; // ₹1 per coin
-    const finalAmount = Math.max(order.totalDiscountedPrice - discountFromCoins, 0);
+    // 🔢 Calculate final amount
+    const discountFromCoins = usedSuperCoins * 1;
+    const basePrice = order.totalDiscountedPrice || 0;
+    const finalAmount = Math.max(basePrice - discountFromCoins - couponDiscount, 0);
 
-    // 💾 Save usedSuperCoins in the order
+    // 🪵 Debug logs
+    console.log("🧾 Order Summary:");
+    console.log("Base Price:", basePrice);
+    console.log("Used Super Coins:", usedSuperCoins, "→ ₹", discountFromCoins);
+    console.log("Coupon Discount:", couponDiscount);
+    console.log("➡️ Final Payable Amount:", finalAmount);
+
+    // 💾 Save to order
     order.usedSuperCoins = usedSuperCoins;
+    order.couponDiscount = couponDiscount;
     await order.save();
 
-    // 💳 Razorpay Payment Link Creation
     const paymentLinkRequest = {
-      amount: finalAmount * 100, // Razorpay expects amount in paisa
+      amount: finalAmount * 100, // Razorpay expects in paisa
       currency: "INR",
       customer: {
         name: user.firstName + " " + user.lastName,
         contact: user.mobile,
         email: user.email,
       },
-      notify: {
-        sms: true,
-        email: true,
-      },
+      notify: { sms: true, email: true },
       reminder_enable: true,
-      // callback_url: `https://fluteon.com/payment/${orderId}`,
-      callback_url: `http://localhost:3001/payment/${orderId}`,
+      callback_url: `http://localhost:3001/payment/${orderId}`, // 🛑 Replace with prod before launch
       callback_method: "get",
     };
 
+    // 🪵 Razorpay Request Preview
+    console.log("🔗 Razorpay Payment Link Request:", paymentLinkRequest);
+
     const paymentLink = await razorpay.paymentLink.create(paymentLinkRequest);
+
+    console.log("✅ Razorpay Payment Link Created:", paymentLink.short_url);
 
     return {
       paymentLinkId: paymentLink.id,
       payment_link_url: paymentLink.short_url,
     };
   } catch (error) {
-    console.error("Error creating payment link (service):", error);
+    console.error("❌ Error creating payment link:", error.message);
     throw new Error(error.message);
   }
 };
+
 
 // by gpt
 const updatePaymentInformation = async (reqData) => {
