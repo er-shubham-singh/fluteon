@@ -1,8 +1,22 @@
 {
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "fluteon.com" }],
+      "destination": "https://www.fluteon.com/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "http://www.fluteon.com" }],
+      "destination": "https://www.fluteon.com/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/sitemap.xml",
-      "destination": "https://useful-ainslee-fluteon-b2e61208.koyeb.app/sitemap.xml"
+      "destination": "https://backend-019n.onrender.com/sitemap.xml"
     }
   ]
 }
